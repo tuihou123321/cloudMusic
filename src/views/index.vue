@@ -2,7 +2,7 @@
     <div>
        <h3>我是index页面</h3>
     </div>
-    <!--打开下面注释后，页面只报错-->
+    <!--打开下面注释后，页面报错-->
     <!--<div>-->
         <!--<keep-alive>-->
             <!--<router-view></router-view>-->

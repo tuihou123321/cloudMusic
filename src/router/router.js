@@ -18,7 +18,7 @@ const router=new VueRouter({
             }
         ]
     },{
-        path:"*",redirect:'/index'
+        path:"*",redirect:'/index/rage'
     }]
 })
 
