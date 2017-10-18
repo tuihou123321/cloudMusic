@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h3>我是app.vue</h3>
     <keep-alive>
       <router-view></router-view>
     </keep-alive>

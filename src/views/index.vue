@@ -2,11 +2,12 @@
     <div>
        <h3>我是index页面</h3>
     </div>
-    <div>
-        <keep-alive>
-            <router-view></router-view>
-        </keep-alive>
-    </div>
+    <!--打开下面注释后，页面只报错-->
+    <!--<div>-->
+        <!--<keep-alive>-->
+            <!--<router-view></router-view>-->
+        <!--</keep-alive>-->
+    <!--</div>-->
 </template>
 
 <script>

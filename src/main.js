@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from 'vue-router'
 import Axios from 'axios'
+import router from './router/router'
 import MuseUI from "muse-ui"
 // import  "muse-ui/dist/muse-ui.css"
 import FastClick from 'fastclick'
