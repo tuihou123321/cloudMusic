@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <h3>我是app.vue</h3>
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -18,5 +17,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
+    /*@import "../assets/theme.less";*/
 </style>

@@ -1,13 +1,15 @@
 <template>
     <div>
-       <h3>我是index页面</h3>
+        <div class="header">
+          固定头部
+        </div>
+        <!--打开下面注释后，页面报错-->
+        <div>
+            <keep-alive>
+                <router-view></router-view>
+            </keep-alive>
+        </div>
     </div>
-    <!--打开下面注释后，页面报错-->
-    <!--<div>-->
-        <!--<keep-alive>-->
-            <!--<router-view></router-view>-->
-        <!--</keep-alive>-->
-    <!--</div>-->
 </template>
 
 <script>
