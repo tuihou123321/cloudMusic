@@ -24,9 +24,13 @@
                 activeTab:'rage'
             }
         },
+        created(){
+            // 刷新页面后，保持tab高亮
+            var tmpArr=this.$route.path.split('/')
+            this.activeTab=tmpArr[2]
+        },
         methods: {
             handleTabChange (val) {
-                console.log(val);
                 this.activeTab=val;
                 this.$router.push({path:'/index/'+val});
             }
@@ -34,7 +38,7 @@
     }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
     @import "../assets/theme.less";
     .view-tabs{
         background: #fff;

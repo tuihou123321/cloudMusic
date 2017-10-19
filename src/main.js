@@ -4,6 +4,7 @@ import Axios from 'axios'
 import router from './router/router'
 import MuseUI from "muse-ui"
 import  "muse-ui/dist/muse-ui.css"
+import  "./assets/common.css"
 import FastClick from 'fastclick'
 
 if('addEventListener' in document){

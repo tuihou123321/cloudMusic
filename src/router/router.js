@@ -7,6 +7,8 @@ Vue.use(VueRouter)
 import index from '../views/index.vue'
 import rage from '../views/rage.vue'
 import songList from '../views/songList.vue'
+import leaderBoard from '../views/leaderBoard.vue'
+import hotSinger from '../views/hotSinger.vue'
 
 const router=new VueRouter({
     routes:[{
@@ -20,7 +22,15 @@ const router=new VueRouter({
             {
                 path:'songList',
                 component:songList
-                // component:require('../views/songList')  //修改成require引入就报错？
+            },
+            {
+                path:'leaderBoard',
+                component:leaderBoard
+            },
+            {
+                path:'hotSinger',
+                component:hotSinger
+                // component:require( '../views/hotSinger.vue')
             }
         ]
     },{
