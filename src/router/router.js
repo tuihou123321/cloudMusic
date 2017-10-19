@@ -4,17 +4,23 @@ import  Vue from 'vue'
 import  VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
-import Index from '../views/index.vue'
-import Rage from '../views/rage.vue'
+import index from '../views/index.vue'
+import rage from '../views/rage.vue'
+import songList from '../views/songList.vue'
 
 const router=new VueRouter({
     routes:[{
         path:'/index',
-        component:Index,
+        component:index,
         children:[
             {
                 path:'rage',
-                component:Rage
+                component:rage
+            },
+            {
+                path:'songList',
+                component:songList
+                // component:require('../views/songList')  //修改成require引入就报错？
             }
         ]
     },{

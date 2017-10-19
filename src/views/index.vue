@@ -1,9 +1,14 @@
 <template>
     <div>
-        <div class="header">
-          固定头部
-        </div>
-        <!--打开下面注释后，页面报错-->
+        <mu-appbar title="网易云音乐">
+            <mu-icon-button icon="search" slot="right"/>
+        </mu-appbar>
+        <mu-tabs :value="activeTab" @change="handleTabChange" class="view-tabs">
+            <mu-tab value="rage" title="时下流行"/>
+            <mu-tab value="songList" title="歌单"/>
+            <mu-tab value="leaderBoard" title="排行榜"/>
+            <mu-tab value="hotSinger" title="热门歌手"/>
+        </mu-tabs>
         <div>
             <keep-alive>
                 <router-view></router-view>
@@ -14,13 +19,31 @@
 
 <script>
     export default {
-        data () {
+        data(){
             return {
-                msg: 'Welcome to Your Vue.js App'
+                activeTab:'rage'
+            }
+        },
+        methods: {
+            handleTabChange (val) {
+                console.log(val);
+                this.activeTab=val;
+                this.$router.push({path:'/index/'+val});
             }
         }
     }
 </script>
 
-<style>
+<style lang="less" scoped>
+    @import "../assets/theme.less";
+    .view-tabs{
+        background: #fff;
+        color: #333;
+        >.mu-tab-link{
+            color:#666666;
+        }
+        >.mu-tab-active{
+            color:@primaryColor;
+        }
+    }
 </style>

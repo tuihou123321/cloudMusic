@@ -5,7 +5,7 @@
   "author": "zhuqiao <chrome0423@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot --port 8082",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
@@ -19,6 +19,10 @@
     "vuex": "^2.1.1"
   },
   "devDependencies": {
+    "less": "^2.7.2",
+    "less-loader": "^2.2.3",
+    "style-loader": "^0.13.1",
+    "json-loader": "^0.5.4",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
@@ -30,13 +34,9 @@
     "vue-template-compiler": "^2.4.4",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1",
-    "less": "^2.7.2",
-    "less-loader": "^2.2.3",
     "keycode": "^2.1.8",
     "chromedriver": "^2.21.2",
     "connect-history-api-fallback": "^1.1.0",
-    "json-loader": "^0.5.4",
-    "style-loader": "^0.13.1",
     "autoprefixer": "^6.4.0"
   }
 }
