@@ -1,14 +1,7 @@
 <template>
     <div class="wrapper">
-        <div class="title">全部歌单</div>
-            <mu-flexbox class="box" wrap="wrap" justify="space-around" :gutter="0">
-                <mu-flexbox-item basis="40%" class="list-item" v-for="item in playList" :key="item.id">
-                    <div class="list-bar">{{item.playCount}}</div>
-                    <img class="list-img img-response" :src="item.coverImgUrl+'?param=300y300'" alt="" >
-                    <div class="list-name">{{item.name}}</div>
-                </mu-flexbox-item>
-            </mu-flexbox>
-            <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
+        <div class="title">播放全部</div>
+        <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
     </div>
 </template>
 
@@ -49,7 +42,7 @@
                 })
             },
             loadMore () {
-                var _this=this;
+                var _this=this;  
                 _this.get();
             }
         }
