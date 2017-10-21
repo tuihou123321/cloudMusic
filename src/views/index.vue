@@ -38,7 +38,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../assets/theme.less";
     .view-tabs{
         background: #fff;

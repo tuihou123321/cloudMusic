@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div class="title">全部歌单</div>
-            <mu-flexbox class="box" wrap="wrap" justify="space-around" :gutter="0">
+            <mu-flexbox class="box" wrap="wrap" justify="space-around" gutter="0">
                 <mu-flexbox-item basis="40%" class="list-item" v-for="item in playList" :key="item.id">
                     <div class="list-bar">{{item.playCount}}</div>
                     <img class="list-img img-response" :src="item.coverImgUrl+'?param=300y300'" alt="" >
@@ -88,9 +88,6 @@
         text-align: right;
         padding: 2px 5px;
         background-color:rgba(0,0,0,.2);
-    }
-    &-item{
-        position: relative;
     }
     &-name{
         -ms-text-overflow: ellipsis;
