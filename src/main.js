@@ -14,7 +14,6 @@ if('addEventListener' in document){
 }
 
 Vue.use(MuseUI);
-
 Vue.prototype.$http=Axios; //用法与vue-resource的调用方法相同，在实例中：this.$http.get()等
 new Vue({
   el: '#app',

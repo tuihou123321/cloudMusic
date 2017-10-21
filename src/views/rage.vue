@@ -1,18 +1,27 @@
 <template>
-    <div>
-       <h3>我是rage页面</h3>
-    </div>
+        <!-- swiper -->
+        <swiper :options="swiperOption">
+            <swiper-slide>Slide 1</swiper-slide>
+            <swiper-slide>Slide 2</swiper-slide>
+            <swiper-slide>Slide 3</swiper-slide>
+            <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
 </template>
 
 <script>
+    import { swiper, swiperSlide } from 'vue-awesome-swiper'
     export default {
-        data () {
+        data() {
             return {
-                msg: 'Welcome to Your Vue.js App'
+                swiperOption: {
+                    pagination: '.swiper-pagination',
+                    paginationClickable: true
+                }
             }
+        },
+        components: {
+            swiper,
+            swiperSlide
         }
     }
 </script>
-
-<style>
-</style>
