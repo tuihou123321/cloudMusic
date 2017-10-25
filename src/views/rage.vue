@@ -19,7 +19,8 @@
             <mu-flexbox wrap="wrap" justify="space-around" :gutter="0">
 
                     <mu-flexbox-item class="list-item" basis="32%" v-for="item in swiperOption.playList">
-                        <router-link :to="{path:'/'}">
+                        <!--<router-link :to="{naplayListDetail.jsontail',params:{}}">-->
+                        <router-link :to="{path:'../playListDetail'}">
                             <div class="list-bar">
                                {{item.playCount}}
                             </div>
