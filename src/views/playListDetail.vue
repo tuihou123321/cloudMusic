@@ -1,42 +1,38 @@
 <template>
     <div class="wrapper">
-        <template>
-            <mu-appbar title="歌单">
-                <mu-icon-button icon="arrow_back" slot="left"/>
-            </mu-appbar>
-            <div  class="bg-grey">
-                <mu-flexbox class="p20">
-                    <mu-flexbox-item>
-                        <img :src="audio.albumPic" alt="" class="w140">
-                    </mu-flexbox-item>
-                    <mu-flexbox-item>
-                        <div class="white">
-                            <p class="mb15">{{audio.name}}</p>
-                            <p>
-                                <mu-avatar slot="left" src="/static/default_cover.png" :size="30"/>
-                                <span class="white mu-avatar-text">{{creator.nickname}}</span>
-                            </p>
-                        </div>
-                    </mu-flexbox-item>
-                </mu-flexbox>
-            </div>
-           <div class="lists">
-               <div class="lists-title p10 pl15 pb0">
-                  <mu-flat-button label="播放全部" icon="add_circle_outline"></mu-flat-button>
-                   <mu-devider/>
-               </div>
-               <mu-list>
-                   <template v-for="(item,index) in playList">
-                       <mu-list-item :disableRipple="true" :title="item.name" :describeText="item.ar[0].name" value="true">
-                           <span slot="left" class="indexStyle">{{index+1}}</span>
-                       </mu-list-item>
-                       <mu-divider inset/>
-                   </template>
-               </mu-list>
-
+        <mu-appbar title="歌单">
+            <mu-icon-button icon="arrow_back" slot="left" @click="back"/>
+        </mu-appbar>
+        <div  class="bg-grey">
+            <mu-flexbox class="p20">
+                <mu-flexbox-item>
+                    <img :src="audio.albumPic" alt="" class="w140">
+                </mu-flexbox-item>
+                <mu-flexbox-item>
+                    <div class="white">
+                        <p class="mb15">{{audio.name}}</p>
+                        <p>
+                            <mu-avatar slot="left" src="/static/default_cover.png" :size="30"/>
+                            <span class="white mu-avatar-text">{{creator.nickname}}</span>
+                        </p>
+                    </div>
+                </mu-flexbox-item>
+            </mu-flexbox>
+        </div>
+       <div class="lists">
+           <div class="lists-title p10 pl15 pb0">
+              <mu-flat-button label="播放全部" icon="add_circle_outline"></mu-flat-button>
+               <mu-divider/>
            </div>
-
-        </template>
+           <mu-list>
+               <template v-for="(item,index) in playList">
+                   <mu-list-item :disableRipple="true" :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item)">
+                       <span slot="left" class="indexStyle">{{index+1}}</span>
+                   </mu-list-item>
+                   <mu-divider inset/>
+               </template>
+           </mu-list>
+       </div>
         <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
         <playerBar ref="playerBar"></playerBar>
     </div>
@@ -69,7 +65,6 @@
                 this.loading = true
                 var _this=this;
                 this.$http.get(api.getPlayListDetail("全部","hot",_this.offset,true,6)).then(function(res){
-                    console.log(10);
                     if(res.code=200){
                         var total=res.data.total;
                         var list=res.data.playlist.tracks;
@@ -93,8 +88,23 @@
                 var _this=this;  
 //                _this.get();
             },
-            playAudio(){
-
+            back(){
+                this.$router.go(-1);
+            },
+            playMusic(item){
+                console.log(this.playMusicAll);
+//                this.playMusicAll.push(item);
+//                var playMusicAll=JSON.parse(localStorage.getItem("playMusicAll"));
+//                console.log(playMusicAll);
+//                if(!playMusicAll){
+//                    var all=[];
+//                    all.push(item);
+//                    localStorage.setItem("playMusicAll",JSON.stringify(all));
+//                }
+//                else{
+//                    playMusicAll.push(item);
+//                    localStorage.setItem("playMusicAll",JSON.stringify(playMusicAll));
+//                }
             }
         }
     }
