@@ -21,12 +21,12 @@
         </div>
        <div class="lists">
            <div class="lists-title p10 pl15 pb0">
-              <mu-flat-button label="播放全部" icon="add_circle_outline"></mu-flat-button>
+              <mu-flat-button label="播放全部" icon="add_circle_outline" @click="playMusic(0,-1)"></mu-flat-button>
                <mu-divider/>
            </div>
            <mu-list>
                <template v-for="(item,index) in playList">
-                   <mu-list-item :disableRipple="true" :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item)">
+                   <mu-list-item  :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item,index)">
                        <span slot="left" class="indexStyle">{{index+1}}</span>
                    </mu-list-item>
                    <mu-divider inset/>
@@ -34,7 +34,7 @@
            </mu-list>
        </div>
         <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
-        <playerBar ref="playerBar"></playerBar>
+        <playerBar :barList.sync="barList"></playerBar>
     </div>
 </template>
 
@@ -48,6 +48,7 @@
                 audio:[],
                 title:"",
                 playList:[],
+                barList:"",
                 offset:0,
                 loading: false,
                 scroller: null
@@ -91,21 +92,16 @@
             back(){
                 this.$router.go(-1);
             },
-            playMusic(item){
-                console.log(this.playMusicAll);
-//                this.playMusicAll.push(item);
-//                var playMusicAll=JSON.parse(localStorage.getItem("playMusicAll"));
-//                console.log(playMusicAll);
-//                if(!playMusicAll){
-//                    var all=[];
-//                    all.push(item);
-//                    localStorage.setItem("playMusicAll",JSON.stringify(all));
-//                }
-//                else{
-//                    playMusicAll.push(item);
-//                    localStorage.setItem("playMusicAll",JSON.stringify(playMusicAll));
-//                }
-            }
+            playMusic(item,index){
+                var arr=[];
+                if(index>=0){
+                    arr.push(item);
+                }
+                else{
+                    arr=this.playList;
+                }
+                this.barList=arr;
+            },
         }
     }
 </script>
