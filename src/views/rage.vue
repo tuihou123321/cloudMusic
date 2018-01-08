@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <input type="text">
         <!-- swiper -->
         <div class="swiper-box">
             <swiper :options="swiperOption">
@@ -31,12 +32,14 @@
                     </mu-flexbox-item>
             </mu-flexbox>
         </div>
+        <playerBar :barList.sync="barList"></playerBar>
     </div>
 </template>
 
 <script>
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import api from '../api/index.js'
+    import playerBar from '../components/playerBar.vue'
 
     export default {
         data() {
@@ -64,7 +67,8 @@
         },
         components: {
             swiper,
-            swiperSlide
+            swiperSlide,
+            playerBar
         }
     }
 </script>

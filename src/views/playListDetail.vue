@@ -34,7 +34,7 @@
            </mu-list>
        </div>
         <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
-        <playerBar :barList.sync="barList"></playerBar>
+        <playerBar  ref="playerBar2"></playerBar>
     </div>
 </template>
 
@@ -94,13 +94,14 @@
             },
             playMusic(item,index){
                 var arr=[];
+                //当index<0时播放全部
                 if(index>=0){
                     arr.push(item);
                 }
                 else{
                     arr=this.playList;
                 }
-                this.barList=arr;
+                this.$refs.playerBar2.barListsFun(arr);
             },
         }
     }

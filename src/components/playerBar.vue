@@ -1,11 +1,12 @@
 <template>
-    <div v-if="barLists.length!=81">
-
+    <!--<div v-if="barLists.length!=81" v-show="barLists.length>0">-->
+        <div  v-if="barLists.length>0">
             <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
                 <div class="mbx">
                     <mu-list>
                         <mu-sub-header>
                             播放列表
+                            <span style="float: right;margin-right: 20px;" @click="clearAll()">清空</span>
                         </mu-sub-header>
                         <template v-for="(item,index) in barLists">
                             <mu-list-item :title="item.name">
@@ -16,26 +17,31 @@
                     </mu-list>
                 </div>
             </mu-bottom-sheet>
-
-
-        <div class="foot p10">
-            <div class="bar">
-                <div class="dib mr10">
-                    <mu-circular-progress v-show="!loading" :size="30"/>
-                    <img src="/static/banner1.jpg" alt="" v-show="loading" width="40px" height="40px" class="radio-cover">
-                </div>
-                <div class="dib">
-                    <p class="fz18">那么骄傲</p>
-                    <p class="grey fz10">金海心</p>
-                </div>
-                <div class="dib fr">
-                    <mu-icon-button class="mini-btn play-list" @click="changeBottomSheet"/>
-                    <mu-icon-button class="mini-btn play" :class="{pause:playing}" @click="toggleStatus"/>
-                    <mu-icon-button class="mini-btn next" @click="next"/>
+            <div class="foot p10">
+                <div>
+                    <div id="progress" style="padding-bottom: 10px;">
+                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:widthProgress}"></div>
+                        <div style="background: #757575;height: 2px;width: 100%;position: absolute;left: 0;"></div>
+                    </div>
+                    <div class="bar">
+                        <audio :src=currentProgressArr.songSrc id="audioPlay" autoplay></audio>
+                        <div class="dib mr10">
+                            <mu-circular-progress v-show="!loading" :size="30"/>
+                            <img :src=currentProgressArr.songImg alt="" v-show="loading" width="40px" height="40px" class="radio-cover">
+                        </div>
+                        <div class="dib">
+                            <p class="fz18">{{currentProgressArr.songName}}</p>
+                            <p class="grey fz10">{{currentProgressArr.singerName}}</p>
+                        </div>
+                        <div class="dib fr">
+                            <mu-icon-button class="mini-btn play-list" @click="changeBottomSheet"/>
+                            <mu-icon-button class="mini-btn play" :class="{pause:playing}" @click="toggleStatus"/>
+                            <mu-icon-button class="mini-btn next" @click="next"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <script>
@@ -45,15 +51,40 @@
             return {
                 loading: true,
                 playing:false,
-                arr:[],
-                bottomSheet:false
+                currentArrIndex:"", //当前播放的索引
+                bottomSheet:false,
+                widthProgress:"0%",  //当前播放的进度条
+                currentTime:0,   //当前播放的时间
+                timer:"",
+                currentProgressArr: {
+                    songName: "",
+                    singerName: "",
+                    songImg: "",
+                    songSrc: ""
+                },
+                a:0,
+                barLists:[]  //选中的播放列表
             }
         },
         mounted () {
         },
         methods:{
             toggleStatus(){
-                this.playing=!this.playing;
+                var _this=this;
+                _this.playing=!_this.playing;
+                var audioPlay;
+                audioPlay=document.getElementById("audioPlay");
+                if(_this.playing){
+                    audioPlay.play();
+                    _this.timer=setInterval(function(){
+                        _this.currentTime++;
+                        _this.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%";
+                    },1000)
+                }
+                else{
+                    clearInterval(_this.timer);
+                    audioPlay.pause();
+                }
             },
             next(){
             },
@@ -68,24 +99,38 @@
             },
             removeList(index){
                this.barLists.splice(index,1);
-               console.log(this.barLists);
-            }
-        },
-        computed:{
-            barLists(){
-                if(this.barList){
-                    this.arr=this.arr.concat(this.barList);
+            },
+            clearAll(){
+                this.barLists=[];
+                console.log(this.barLists.length);
+            },
+            barListsFun(arr){
+                if(arr){
+                 this.barLists=this.barLists.concat(arr);
                 }
-                return this.arr;
+                this.playing=false;  //重置播放按钮
+                this.widthProgress="0%";  //重置播放的进度条
+                this.currentTime=0;   //重置播放的时间
+               var objParm=this.barLists[this.barLists.length-1];
+               this.currentProgressArr.songName=objParm.name;
+               this.currentProgressArr.singerName=objParm.ar[0].name;
+               this.a++;
+               if(this.a%2==1){
+                   this.currentProgressArr.songSrc="/static/music/music1.mp3";
+               }
+               else{
+                   this.currentProgressArr.songSrc="/static/music/music2.mp3";
+               }
+               console.log(this.currentProgressArr.songSrc);
+               this.currentProgressArr.songImg="/static/banner1.jpg";
+               this.toggleStatus();
             }
-        },
-        props:['barList']
-
+        }
     }
 </script>
 
 <style lang="less">
-@import "../assets/theme.less";
+/*@import "../assets/theme.less";*/
 .mbx{
     margin-bottom:70px;
 }
