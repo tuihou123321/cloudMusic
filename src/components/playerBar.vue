@@ -1,6 +1,7 @@
 <template>
-    <!--<div v-if="barLists.length!=81" v-show="barLists.length>0">-->
-        <div  v-if="barLists.length>0">
+    <!--<div v-if="playerBarJson.barLists.length!=81" v-show="playerBarJson.barLists.length>0">-->
+        <!--<div  v-if="playerBarJson.barLists.length>0">-->
+        <div>
             <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
                 <div class="mbx">
                     <mu-list>
@@ -8,8 +9,8 @@
                             播放列表
                             <span style="float: right;margin-right: 20px;" @click="clearAll()">清空</span>
                         </mu-sub-header>
-                        <template v-for="(item,index) in barLists">
-                            <mu-list-item :title="item.name">
+                        <template v-for="(item,index) in playerBarJson.barLists">
+                            <mu-list-item :title="item.name" @click="startPlay(item,index)" :class="{colorRed:index==playerBarJson.currentArrIndex}">
                                 <mu-icon value="chat_bubble" slot="right" @click="removeList(index)"/>
                             </mu-list-item>
                             <mu-divider/>
@@ -20,23 +21,23 @@
             <div class="foot p10">
                 <div>
                     <div id="progress" style="padding-bottom: 10px;">
-                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:widthProgress}"></div>
+                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:playerBarJson.widthProgress}"></div>
                         <div style="background: #757575;height: 2px;width: 100%;position: absolute;left: 0;"></div>
                     </div>
                     <div class="bar">
-                        <audio :src=currentProgressArr.songSrc id="audioPlay" autoplay></audio>
+                        <audio :src=playerBarJson.currentProgressArr.songSrc id="audioPlay" autoplay></audio>
                         <div class="dib mr10">
                             <mu-circular-progress v-show="!loading" :size="30"/>
-                            <img :src=currentProgressArr.songImg alt="" v-show="loading" width="40px" height="40px" class="radio-cover">
+                            <img :src=playerBarJson.currentProgressArr.songImg alt="" v-show="loading" width="40px" height="40px" class="radio-cover">
                         </div>
                         <div class="dib">
-                            <p class="fz18">{{currentProgressArr.songName}}</p>
-                            <p class="grey fz10">{{currentProgressArr.singerName}}</p>
+                            <p class="fz18">{{playerBarJson.currentProgressArr.songName}}</p>
+                            <p class="grey fz10">{{playerBarJson.currentProgressArr.singerName}}</p>
                         </div>
                         <div class="dib fr">
                             <mu-icon-button class="mini-btn play-list" @click="changeBottomSheet"/>
                             <mu-icon-button class="mini-btn play" :class="{pause:playing}" @click="toggleStatus"/>
-                            <mu-icon-button class="mini-btn next" @click="next"/>
+                            <mu-icon-button class="mini-btn next" @click="nextMusic()"/>
                         </div>
                     </div>
                 </div>
@@ -51,19 +52,22 @@
             return {
                 loading: true,
                 playing:false,
-                currentArrIndex:"", //当前播放的索引
                 bottomSheet:false,
-                widthProgress:"0%",  //当前播放的进度条
-                currentTime:0,   //当前播放的时间
                 timer:"",
-                currentProgressArr: {
-                    songName: "",
-                    singerName: "",
-                    songImg: "",
-                    songSrc: ""
-                },
                 a:0,
-                barLists:[]  //选中的播放列表
+                b:0,
+                playerBarJson:{
+                    currentArrIndex:0, //当前播放的索引
+                    widthProgress:"0%",  //当前播放的进度条
+                    currentTime:0,   //当前播放的时间
+                    currentProgressArr: {
+                        songName: "",
+                        singerName: "",
+                        songImg: "",
+                        songSrc: ""
+                    },
+                    barLists:[]  //选中的播放列表
+                }
             }
         },
         mounted () {
@@ -77,8 +81,8 @@
                 if(_this.playing){
                     audioPlay.play();
                     _this.timer=setInterval(function(){
-                        _this.currentTime++;
-                        _this.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%";
+                        _this.playerBarJson.currentTime++;
+                        _this.playerBarJson.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%";
                     },1000)
                 }
                 else{
@@ -98,39 +102,103 @@
                 this.bottomSheet = !this.bottomSheet;
             },
             removeList(index){
-               this.barLists.splice(index,1);
+               this.playerBarJson.barLists.splice(index,1);
             },
             clearAll(){
-                this.barLists=[];
-                console.log(this.barLists.length);
+                this.playerBarJson.barLists=[];
             },
             barListsFun(arr){
-                if(arr){
-                 this.barLists=this.barLists.concat(arr);
+                var len=this.playerBarJson.barLists.length;
+                var _this=this;
+                // 歌曲列表不为空;
+                if(len>0){
+                    function isExistFun(){
+                        var isExist=false; //默认歌曲不重复
+                        for (var i=0;i<len;i++) {//
+                            if (_this.playerBarJson.barLists[i].id == arr[0].id) {
+                                //重复，不添加到歌曲库
+                                _this.playerBarJson.currentArrIndex = i;
+                                isExist=true;
+                            }
+                        }
+                        return isExist;
+                    }
+                    //不重复
+                    if(!isExistFun()){
+                        _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
+                        _this.playerBarJson.currentArrIndex = _this.playerBarJson.barLists.length-1;
+                    }
                 }
+                //歌曲列表为空，直接添加，_this.playerBarJson.currentArrIndex=0;
+                else{
+                    _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
+                    _this.playerBarJson.currentArrIndex=0;
+                }
+                //播放传入的单曲
+                _this.startPlay(_this.playerBarJson.barLists[_this.playerBarJson.currentArrIndex]);
+            },
+            startPlay(objParm,index){
+                //当index不为空时，代表点击的是选中菜单的索引，否则就是最后一首歌
+//                this.playerBarJson.currentArrIndex=index>=0?index:this.playerBarJson.barLists.length-1;
+                if(index>=0){
+                    this.playerBarJson.currentArrIndex=index;
+                }
+              this.startPlay2(objParm);
+            },
+            startPlay2(objParm){
                 this.playing=false;  //重置播放按钮
-                this.widthProgress="0%";  //重置播放的进度条
-                this.currentTime=0;   //重置播放的时间
-               var objParm=this.barLists[this.barLists.length-1];
-               this.currentProgressArr.songName=objParm.name;
-               this.currentProgressArr.singerName=objParm.ar[0].name;
-               this.a++;
-               if(this.a%2==1){
-                   this.currentProgressArr.songSrc="/static/music/music1.mp3";
-               }
-               else{
-                   this.currentProgressArr.songSrc="/static/music/music2.mp3";
-               }
-               console.log(this.currentProgressArr.songSrc);
-               this.currentProgressArr.songImg="/static/banner1.jpg";
-               this.toggleStatus();
+                this.playerBarJson.widthProgress="0%";  //重置播放的进度条
+                this.playerBarJson.currentTime=0;   //重置播放的时间
+                if(objParm.name.length>7){
+                    this.playerBarJson.currentProgressArr.songName=objParm.name.substring(0,7)+"..";
+                }
+                else{
+                    this.playerBarJson.currentProgressArr.songName=objParm.name;
+                }
+                this.playerBarJson.currentProgressArr.singerName=objParm.ar[0].name;
+                this.a++;
+                if(this.a%2==1){
+                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music1.mp3";
+                }
+                else{
+                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music2.mp3";
+                }
+                this.playerBarJson.currentProgressArr.songImg="/static/banner1.jpg";
+                this.toggleStatus();
+                this.setItem();
+            },
+            //每次操作都要进行本地存储（点击自动播放）
+            setItem:function(){
+//                localStorage.setItem("playerBarJson",JSON.stringify(this.playerBarJson));  //存储数据到本地
+//                console.log(this.getItem());
+            },
+            getItem:function(){
+                var arrayObjectLocal = JSON.parse(localStorage.getItem("playerBarJson"));  //读取本地数据
+                return arrayObjectLocal;
+            },
+            nextMusic:function(){
+                if(this.playerBarJson.currentArrIndex<this.playerBarJson.barLists.length-1){
+                    ++this.playerBarJson.currentArrIndex;
+                }else{
+                    this.playerBarJson.currentArrIndex=0;
+                }
+                this.startPlay2(this.playerBarJson.barLists[this.playerBarJson.currentArrIndex]);
             }
-        }
+        },
+        created:function(){
+            //本地有，调用本地
+            if(this.getItem){
+                this.playerBarJson=this.getItem;
+            }
+         }
     }
 </script>
 
 <style lang="less">
 /*@import "../assets/theme.less";*/
+.colorRed .mu-item-title{
+    color:red !important;
+}
 .mbx{
     margin-bottom:70px;
 }
@@ -176,6 +244,9 @@
 }
 .radio-cover{
     vertical-align: bottom;
+}
+.mu-list{
+    max-height: 4rem;
 }
 
 </style>

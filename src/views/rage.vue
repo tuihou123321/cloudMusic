@@ -32,7 +32,7 @@
                     </mu-flexbox-item>
             </mu-flexbox>
         </div>
-        <playerBar :barList.sync="barList"></playerBar>
+        <playerBar></playerBar>
     </div>
 </template>
 

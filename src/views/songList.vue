@@ -29,9 +29,9 @@
         },
         methods:{
             get(){
-                this.loading = true
+                this.loading = true;
                 var _this=this;
-                this.$http.get(api.getPlayListByWhere("全部","hot",_this.offset,true,6)).then(function(res){
+                _this.$http.get(api.getPlayListByWhere("全部","hot",_this.offset,true,6)).then(function(res){
                     console.log(1);
                     if(res.code=200){
                         var total=res.data.total;
