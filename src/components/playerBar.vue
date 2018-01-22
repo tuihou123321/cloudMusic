@@ -167,15 +167,6 @@
                 this.toggleStatus();
                 this.setItem();
             },
-            //每次操作都要进行本地存储（点击自动播放）
-            setItem:function(){
-//                localStorage.setItem("playerBarJson",JSON.stringify(this.playerBarJson));  //存储数据到本地
-//                console.log(this.getItem());
-            },
-            getItem:function(){
-                var arrayObjectLocal = JSON.parse(localStorage.getItem("playerBarJson"));  //读取本地数据
-                return arrayObjectLocal;
-            },
             nextMusic:function(){
                 if(this.playerBarJson.currentArrIndex<this.playerBarJson.barLists.length-1){
                     ++this.playerBarJson.currentArrIndex;
@@ -186,10 +177,6 @@
             }
         },
         created:function(){
-            //本地有，调用本地
-            if(this.getItem){
-                this.playerBarJson=this.getItem;
-            }
          }
     }
 </script>
