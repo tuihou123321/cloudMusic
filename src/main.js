@@ -5,6 +5,7 @@ import router from './router/router'
 import MuseUI from "muse-ui"
 import  "muse-ui/dist/muse-ui.css"
 import  "./assets/common.css"
+import store from "./store/index.js"
 // import FastClick from 'fastclick'
 //
 // if('addEventListener' in document){
@@ -18,5 +19,6 @@ Vue.prototype.$http=Axios; //用法与vue-resource的调用方法相同，在实
 new Vue({
   el: '#app',
   router,
+    store,
   render: h => h(App)
 })

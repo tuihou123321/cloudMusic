@@ -21,12 +21,12 @@
         </div>
        <div class="lists">
            <div class="lists-title p10 pl15 pb0">
-              <mu-flat-button label="播放全部" icon="add_circle_outline" @click="playMusic(0,-1)"></mu-flat-button>
+              <mu-flat-button label="播放全部" icon="add_circle_outline" @click="playMusicAll()"></mu-flat-button>
                <mu-divider/>
            </div>
            <mu-list>
                <template v-for="(item,index) in playList">
-                   <mu-list-item  :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item,index)">
+                   <mu-list-item  :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item)">
                        <span slot="left" class="indexStyle">{{index+1}}</span>
                    </mu-list-item>
                    <mu-divider inset/>
@@ -41,6 +41,8 @@
 <script>
     import api from '../api/index.js'
     import playerBar from '../components/playerBar.vue'
+    import {mapState} from "vuex"
+
     export default {
         data () {
             return {
@@ -53,6 +55,9 @@
                 loading: false,
                 scroller: null
             }
+        },
+        computed:{
+//            ...mapState(["arr"])
         },
         components:{
             playerBar
@@ -92,17 +97,14 @@
             back(){
                 this.$router.go(-1);
             },
-            playMusic(item,index){
-                var arr=[];
-                //当index<0时播放全部
-                if(index>=0){
-                    arr.push(item);
-                }
-                else{
-                    arr=this.playList;
-                }
-                this.$refs.playerBar2.barListsFun(arr);
+            playMusic(item){
+               //向store中添加数据(此时是同步的)；
+               this.$store.commit("addMusic",item);
             },
+            playMusicAll(){
+            }
+        },
+        created:function(){
         }
     }
 </script>

@@ -21,7 +21,7 @@
             <div class="foot p10">
                 <div>
                     <div id="progress" style="padding-bottom: 10px;">
-                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:playerBarJson.widthProgress}"></div>
+                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:widthProgress}"></div>
                         <div style="background: #757575;height: 2px;width: 100%;position: absolute;left: 0;"></div>
                     </div>
                     <div class="bar">
@@ -36,7 +36,7 @@
                         </div>
                         <div class="dib fr">
                             <mu-icon-button class="mini-btn play-list" @click="changeBottomSheet"/>
-                            <mu-icon-button class="mini-btn play" :class="{pause:playing}" @click="toggleStatus"/>
+                            <mu-icon-button class="mini-btn play" :class="{pause:!playing}" @click="toggleStatus"/>
                             <mu-icon-button class="mini-btn next" @click="nextMusic()"/>
                         </div>
                     </div>
@@ -51,46 +51,40 @@
         data () {
             return {
                 loading: true,
-                playing:false,
                 bottomSheet:false,
                 timer:"",
                 a:0,
-                b:0,
-                playerBarJson:{
-                    currentArrIndex:0, //当前播放的索引
-                    widthProgress:"0%",  //当前播放的进度条
-                    currentTime:0,   //当前播放的时间
-                    currentProgressArr: {
-                        songName: "",
-                        singerName: "",
-                        songImg: "",
-                        songSrc: ""
-                    },
-                    barLists:[]  //选中的播放列表
-                }
+                b:0
             }
         },
-        mounted () {
+        computed:{
+            playerBarJson:function(){
+                return this.$store.state.playerBarJson;
+            },
+            playing:function(){
+                return this.$store.state.playerBarJson.playing;
+            },
+            widthProgress:function(){
+                return this.$store.state.playerBarJson.widthProgress;
+            }
         },
         methods:{
             toggleStatus(){
                 var _this=this;
-                _this.playing=!_this.playing;
-                var audioPlay;
-                audioPlay=document.getElementById("audioPlay");
+                this.$store.commit("changePlayIcon");
+                var audioPlay=document.getElementById("audioPlay");
                 if(_this.playing){
                     audioPlay.play();
                     _this.timer=setInterval(function(){
-                        _this.playerBarJson.currentTime++;
-                        _this.playerBarJson.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%";
+//                        _this.$store.commit("toggleState");
+                        _this.$store.state.playerBarJson.currentTime++;
+                        _this.$store.state.playerBarJson.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%"
                     },1000)
                 }
                 else{
                     clearInterval(_this.timer);
                     audioPlay.pause();
                 }
-            },
-            next(){
             },
             closeBottomSheet () {
                 this.bottomSheet = false
@@ -102,82 +96,27 @@
                 this.bottomSheet = !this.bottomSheet;
             },
             removeList(index){
-               this.playerBarJson.barLists.splice(index,1);
+                this.$store.commit("removeList",{index:index});
             },
             clearAll(){
-                this.playerBarJson.barLists=[];
+                this.$store.commit("clearAll");
             },
             barListsFun(arr){
-                var len=this.playerBarJson.barLists.length;
-                var _this=this;
-                // 歌曲列表不为空;
-                if(len>0){
-                    function isExistFun(){
-                        var isExist=false; //默认歌曲不重复
-                        for (var i=0;i<len;i++) {//
-                            if (_this.playerBarJson.barLists[i].id == arr[0].id) {
-                                //重复，不添加到歌曲库
-                                _this.playerBarJson.currentArrIndex = i;
-                                isExist=true;
-                            }
-                        }
-                        return isExist;
-                    }
-                    //不重复
-                    if(!isExistFun()){
-                        _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
-                        _this.playerBarJson.currentArrIndex = _this.playerBarJson.barLists.length-1;
-                    }
-                }
-                //歌曲列表为空，直接添加，_this.playerBarJson.currentArrIndex=0;
-                else{
-                    _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
-                    _this.playerBarJson.currentArrIndex=0;
-                }
-                //播放传入的单曲
-                _this.startPlay(_this.playerBarJson.barLists[_this.playerBarJson.currentArrIndex]);
+               this.$store.commit("barListsFun",arr);
             },
             startPlay(objParm,index){
-                //当index不为空时，代表点击的是选中菜单的索引，否则就是最后一首歌
-//                this.playerBarJson.currentArrIndex=index>=0?index:this.playerBarJson.barLists.length-1;
                 if(index>=0){
                     this.playerBarJson.currentArrIndex=index;
                 }
               this.startPlay2(objParm);
             },
             startPlay2(objParm){
-                this.playing=false;  //重置播放按钮
-                this.playerBarJson.widthProgress="0%";  //重置播放的进度条
-                this.playerBarJson.currentTime=0;   //重置播放的时间
-                if(objParm.name.length>7){
-                    this.playerBarJson.currentProgressArr.songName=objParm.name.substring(0,7)+"..";
-                }
-                else{
-                    this.playerBarJson.currentProgressArr.songName=objParm.name;
-                }
-                this.playerBarJson.currentProgressArr.singerName=objParm.ar[0].name;
-                this.a++;
-                if(this.a%2==1){
-                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music1.mp3";
-                }
-                else{
-                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music2.mp3";
-                }
-                this.playerBarJson.currentProgressArr.songImg="/static/banner1.jpg";
-                this.toggleStatus();
-                this.setItem();
+                 this.$store.commit("startPlay2",{obj:objParm});
             },
             nextMusic:function(){
-                if(this.playerBarJson.currentArrIndex<this.playerBarJson.barLists.length-1){
-                    ++this.playerBarJson.currentArrIndex;
-                }else{
-                    this.playerBarJson.currentArrIndex=0;
-                }
-                this.startPlay2(this.playerBarJson.barLists[this.playerBarJson.currentArrIndex]);
+                this.$store.commit("nextMusic");
             }
-        },
-        created:function(){
-         }
+        }
     }
 </script>
 
