@@ -34,13 +34,11 @@
            </mu-list>
        </div>
         <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
-        <playerBar  ref="playerBar2"></playerBar>
     </div>
 </template>
 
 <script>
     import api from '../api/index.js'
-    import playerBar from '../components/playerBar.vue'
     import {mapState} from "vuex"
 
     export default {
@@ -60,7 +58,6 @@
 //            ...mapState(["arr"])
         },
         components:{
-            playerBar
         },
         mounted () {
             this.scroller = this.$el;
@@ -74,9 +71,7 @@
                     if(res.code=200){
                         var total=res.data.total;
                         var list=res.data.playlist.tracks;
-                        for(let i=0;i<list.length;i++){
-                            _this.playList.push(list[i]);
-                        }
+                        _this.playList=_this.playList.concat(list);
                         _this.offset=_this.offset+10;
                         if(_this.offset>total) _this.offset=total;
                         _this.creator=res.data.playlist.creator;
@@ -102,6 +97,9 @@
                this.$store.commit("addMusic",item);
             },
             playMusicAll(){
+                console.log(11);
+                //把所以音乐添加进去
+                this.$store.commit("playMusicAll",this.playList);
             }
         },
         created:function(){

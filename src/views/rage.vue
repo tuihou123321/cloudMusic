@@ -32,14 +32,12 @@
                     </mu-flexbox-item>
             </mu-flexbox>
         </div>
-        <playerBar></playerBar>
     </div>
 </template>
 
 <script>
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import api from '../api/index.js'
-    import playerBar from '../components/playerBar.vue'
 
     export default {
         data() {
@@ -67,8 +65,7 @@
         },
         components: {
             swiper,
-            swiperSlide,
-            playerBar
+            swiperSlide
         }
     }
 </script>
