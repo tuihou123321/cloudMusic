@@ -27,8 +27,7 @@ npm run dev
 
 
 ## 界面展示：
-<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/rage.png" width="375px" style="float:left;padding-right:30px">
-<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/songList.png" width="375px">
+<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/rage.png" width="375px" style="float:left;padding-right:30px"><img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/songList.png" width="375px">
 
-<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/playListDetail1.png" width="375px" style="float:left;padding-right:30px">
-<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/playListDetail2.png" width="375px">
+<img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/playListDetail1.png" width="375px" style="float:left;padding-right:30px"><img src="https://github.com/tuihou123321/cloudMusic/blob/dev/screenshots/playListDetail2.png" width="375px">
+
