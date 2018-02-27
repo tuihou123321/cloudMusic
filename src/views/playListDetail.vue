@@ -21,12 +21,12 @@
         </div>
        <div class="lists">
            <div class="lists-title p10 pl15 pb0">
-              <mu-flat-button label="播放全部" icon="add_circle_outline" @click="playMusic(0,-1)"></mu-flat-button>
+              <mu-flat-button label="播放全部" icon="add_circle_outline" @click="playMusicAll()"></mu-flat-button>
                <mu-divider/>
            </div>
            <mu-list>
                <template v-for="(item,index) in playList">
-                   <mu-list-item  :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item,index)">
+                   <mu-list-item  :title="item.name" :describeText="item.ar[0].name" value="true" @click="playMusic(item)">
                        <span slot="left" class="indexStyle">{{index+1}}</span>
                    </mu-list-item>
                    <mu-divider inset/>
@@ -34,13 +34,13 @@
            </mu-list>
        </div>
         <mu-infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
-        <playerBar  ref="playerBar2"></playerBar>
     </div>
 </template>
 
 <script>
     import api from '../api/index.js'
-    import playerBar from '../components/playerBar.vue'
+    import {mapState} from "vuex"
+
     export default {
         data () {
             return {
@@ -54,8 +54,10 @@
                 scroller: null
             }
         },
+        computed:{
+//            ...mapState(["arr"])
+        },
         components:{
-            playerBar
         },
         mounted () {
             this.scroller = this.$el;
@@ -69,9 +71,7 @@
                     if(res.code=200){
                         var total=res.data.total;
                         var list=res.data.playlist.tracks;
-                        for(let i=0;i<list.length;i++){
-                            _this.playList.push(list[i]);
-                        }
+                        _this.playList=_this.playList.concat(list);
                         _this.offset=_this.offset+10;
                         if(_this.offset>total) _this.offset=total;
                         _this.creator=res.data.playlist.creator;
@@ -92,17 +92,17 @@
             back(){
                 this.$router.go(-1);
             },
-            playMusic(item,index){
-                var arr=[];
-                //当index<0时播放全部
-                if(index>=0){
-                    arr.push(item);
-                }
-                else{
-                    arr=this.playList;
-                }
-                this.$refs.playerBar2.barListsFun(arr);
+            playMusic(item){
+               //向store中添加数据(此时是同步的)；
+               this.$store.commit("addMusic",item);
             },
+            playMusicAll(){
+                console.log(11);
+                //把所以音乐添加进去
+                this.$store.commit("playMusicAll",this.playList);
+            }
+        },
+        created:function(){
         }
     }
 </script>

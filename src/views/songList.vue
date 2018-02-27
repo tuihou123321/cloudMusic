@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div class="title">全部歌单</div>
-            <mu-flexbox class="box" wrap="wrap" justify="space-around" gutter="0">
+            <mu-flexbox class="box" wrap="wrap" justify="space-around">
                 <mu-flexbox-item basis="40%" class="list-item" v-for="item in playList" :key="item.id">
                     <div class="list-bar">{{item.playCount}}</div>
                     <img class="list-img img-response" :src="item.coverImgUrl+'?param=300y300'" alt="" >
@@ -31,16 +31,10 @@
             get(){
                 this.loading = true;
                 var _this=this;
-                _this.$http.get(api.getPlayListByWhere("全部","hot",_this.offset,true,6)).then(function(res){
-                    console.log(1);
+                this.$http.get(api.getPlayListByWhere("全部","hot",_this.offset,true,6)).then(function(res){
                     if(res.code=200){
-                        var total=res.data.total;
-                        var list=res.data.playlists;
-                        for(let i=0;i<list.length;i++){
-                            _this.playList.push(list[i]);
-                        }
-                        _this.offset=_this.offset+6;
-                        if(_this.offset>total) _this.offset=total
+                        _this.playList=_this.playList.concat(res.data.playlists);
+                        _this.offset=_this.offset>res.data.total?res.data.total:_this.offset+6;
                         _this.loading=false
                     }
                     else{
@@ -48,9 +42,8 @@
                     }
                 })
             },
-            loadMore () {
-                var _this=this;
-                _this.get();
+            loadMore(){
+               this.get();
             }
         }
     }

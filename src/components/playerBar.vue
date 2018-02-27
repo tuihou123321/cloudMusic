@@ -1,6 +1,4 @@
 <template>
-    <!--<div v-if="playerBarJson.barLists.length!=81" v-show="playerBarJson.barLists.length>0">-->
-        <!--<div  v-if="playerBarJson.barLists.length>0">-->
         <div>
             <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
                 <div class="mbx">
@@ -10,8 +8,9 @@
                             <span style="float: right;margin-right: 20px;" @click="clearAll()">清空</span>
                         </mu-sub-header>
                         <template v-for="(item,index) in playerBarJson.barLists">
-                            <mu-list-item :title="item.name" @click="startPlay(item,index)" :class="{colorRed:index==playerBarJson.currentArrIndex}">
-                                <mu-icon value="chat_bubble" slot="right" @click="removeList(index)"/>
+                            <mu-list-item :title="item.name" @click="playMusic2(item)" :class="{colorRed:index==playerBarJson.currentArrIndex}">
+                                <!--<mu-icon value="chat_bubble" slot="right" @click="removeList(index)"/>-->
+                               <span slot="right" @click="removeList(index)">x</span>
                             </mu-list-item>
                             <mu-divider/>
                         </template>
@@ -20,28 +19,29 @@
             </mu-bottom-sheet>
             <div class="foot p10">
                 <div>
-                    <div id="progress" style="padding-bottom: 10px;">
-                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:playerBarJson.widthProgress}"></div>
+                    <div style="padding-bottom: 10px;">
+                        <div style="background: #ce3d3a;height: 2px;position: absolute;z-index: 100;left: 0;" :style="{width:widthProgress}"></div>
                         <div style="background: #757575;height: 2px;width: 100%;position: absolute;left: 0;"></div>
                     </div>
                     <div class="bar">
-                        <audio :src=playerBarJson.currentProgressArr.songSrc id="audioPlay" autoplay></audio>
+                        <audio :src=playerBarJson.currentProgressArr.songSrc  autoplay @canplay="playMusic()" @error="error()" @ended="next()" @timeupdate="timeupdate()" id="audioPlay2"></audio>
                         <div class="dib mr10">
                             <mu-circular-progress v-show="!loading" :size="30"/>
                             <img :src=playerBarJson.currentProgressArr.songImg alt="" v-show="loading" width="40px" height="40px" class="radio-cover">
                         </div>
                         <div class="dib">
-                            <p class="fz18">{{playerBarJson.currentProgressArr.songName}}</p>
+                            <p class="fz18">{{playerBarJson.currentProgressArr.songName | limitLen}}</p>
                             <p class="grey fz10">{{playerBarJson.currentProgressArr.singerName}}</p>
                         </div>
                         <div class="dib fr">
                             <mu-icon-button class="mini-btn play-list" @click="changeBottomSheet"/>
-                            <mu-icon-button class="mini-btn play" :class="{pause:playing}" @click="toggleStatus"/>
-                            <mu-icon-button class="mini-btn next" @click="nextMusic()"/>
+                            <mu-icon-button class="mini-btn play" :class="{pause:!playing}" @click="toggleStatus"/>
+                            <mu-icon-button class="mini-btn next" @click="next()"/>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="space"></div>
         </div>
 </template>
 
@@ -51,138 +51,86 @@
         data () {
             return {
                 loading: true,
-                playing:false,
                 bottomSheet:false,
                 timer:"",
                 a:0,
-                b:0,
-                playerBarJson:{
-                    currentArrIndex:0, //当前播放的索引
-                    widthProgress:"0%",  //当前播放的进度条
-                    currentTime:0,   //当前播放的时间
-                    currentProgressArr: {
-                        songName: "",
-                        singerName: "",
-                        songImg: "",
-                        songSrc: ""
-                    },
-                    barLists:[]  //选中的播放列表
-                }
+                b:0
             }
         },
-        mounted () {
+        computed:{
+            playerBarJson:function(){
+                return this.$store.state.playerBarJson;
+            },
+            playing:function(){
+                return this.$store.state.playerBarJson.playing;
+            },
+            widthProgress:function(){
+                return this.$store.state.playerBarJson.widthProgress;
+            }
         },
         methods:{
-            toggleStatus(){
-                var _this=this;
-                _this.playing=!_this.playing;
-                var audioPlay;
-                audioPlay=document.getElementById("audioPlay");
-                if(_this.playing){
-                    audioPlay.play();
-                    _this.timer=setInterval(function(){
-                        _this.playerBarJson.currentTime++;
-                        _this.playerBarJson.widthProgress=audioPlay.currentTime/audioPlay.duration*100+"%";
-                    },1000)
-                }
-                else{
-                    clearInterval(_this.timer);
-                    audioPlay.pause();
+            playMusic(){
+                this.$store.commit("startIcon");
+            },
+            playMusic2(item){
+                this.$store.commit("playMusic",item);
+            },
+            error(){
+                if(this.$store.state.playerBarJson.barLists.length>0){
+                    console.log("音乐出错了");
                 }
             },
             next(){
+                this.$store.commit("next");
             },
-            closeBottomSheet () {
+            timeupdate(){
+                var audioPlay=document.getElementById("audioPlay2");
+                this.$store.commit("timeupdate",audioPlay.currentTime);
+                this.$store.commit("widthProgress",audioPlay.currentTime/audioPlay.duration*100+"%");
+            },
+            toggleStatus(){
+                this.$store.commit("toggleStatus");
+                var audioPlay=document.getElementById("audioPlay2");
+                if(this.playing){
+                    audioPlay.play();
+                }
+                else{
+                    audioPlay.pause();
+                }
+            },
+            closeBottomSheet(){
                 this.bottomSheet = false
             },
-            openBottomSheet () {
-                this.bottomSheet = true
-            },
-            changeBottomSheet () {
+            changeBottomSheet(){
                 this.bottomSheet = !this.bottomSheet;
             },
             removeList(index){
-               this.playerBarJson.barLists.splice(index,1);
+                this.$store.commit("removeList",{index:index});
             },
             clearAll(){
-                this.playerBarJson.barLists=[];
-            },
-            barListsFun(arr){
-                var len=this.playerBarJson.barLists.length;
-                var _this=this;
-                // 歌曲列表不为空;
-                if(len>0){
-                    function isExistFun(){
-                        var isExist=false; //默认歌曲不重复
-                        for (var i=0;i<len;i++) {//
-                            if (_this.playerBarJson.barLists[i].id == arr[0].id) {
-                                //重复，不添加到歌曲库
-                                _this.playerBarJson.currentArrIndex = i;
-                                isExist=true;
-                            }
-                        }
-                        return isExist;
-                    }
-                    //不重复
-                    if(!isExistFun()){
-                        _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
-                        _this.playerBarJson.currentArrIndex = _this.playerBarJson.barLists.length-1;
-                    }
-                }
-                //歌曲列表为空，直接添加，_this.playerBarJson.currentArrIndex=0;
-                else{
-                    _this.playerBarJson.barLists = _this.playerBarJson.barLists.concat(arr);
-                    _this.playerBarJson.currentArrIndex=0;
-                }
-                //播放传入的单曲
-                _this.startPlay(_this.playerBarJson.barLists[_this.playerBarJson.currentArrIndex]);
-            },
-            startPlay(objParm,index){
-                //当index不为空时，代表点击的是选中菜单的索引，否则就是最后一首歌
-//                this.playerBarJson.currentArrIndex=index>=0?index:this.playerBarJson.barLists.length-1;
-                if(index>=0){
-                    this.playerBarJson.currentArrIndex=index;
-                }
-              this.startPlay2(objParm);
-            },
-            startPlay2(objParm){
-                this.playing=false;  //重置播放按钮
-                this.playerBarJson.widthProgress="0%";  //重置播放的进度条
-                this.playerBarJson.currentTime=0;   //重置播放的时间
-                if(objParm.name.length>7){
-                    this.playerBarJson.currentProgressArr.songName=objParm.name.substring(0,7)+"..";
-                }
-                else{
-                    this.playerBarJson.currentProgressArr.songName=objParm.name;
-                }
-                this.playerBarJson.currentProgressArr.singerName=objParm.ar[0].name;
-                this.a++;
-                if(this.a%2==1){
-                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music1.mp3";
-                }
-                else{
-                    this.playerBarJson.currentProgressArr.songSrc="/static/music/music2.mp3";
-                }
-                this.playerBarJson.currentProgressArr.songImg="/static/banner1.jpg";
-                this.toggleStatus();
-                this.setItem();
-            },
-            nextMusic:function(){
-                if(this.playerBarJson.currentArrIndex<this.playerBarJson.barLists.length-1){
-                    ++this.playerBarJson.currentArrIndex;
-                }else{
-                    this.playerBarJson.currentArrIndex=0;
-                }
-                this.startPlay2(this.playerBarJson.barLists[this.playerBarJson.currentArrIndex]);
+                this.$store.commit("clearAll");
+                this.bottomSheet = !this.bottomSheet;
             }
         },
-        created:function(){
-         }
+        filters:{
+            limitLen(name){
+                if(name){
+                    return name.length>7?name.substring(0,7)+"...":name;
+                }
+            }
+        }
     }
 </script>
 
 <style lang="less">
 /*@import "../assets/theme.less";*/
+.space{
+    width: 100%;
+    height: 0.76rem;
+    background: white;
+    display: block;
+    bottom: 0;
+}
 .colorRed .mu-item-title{
     color:red !important;
 }
